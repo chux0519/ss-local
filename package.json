@@ -1,0 +1,15 @@
+{
+  "name": "ss-local",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "jest": "^23.5.0"
+  }
+}
