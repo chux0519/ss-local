@@ -1,3 +1,4 @@
+const stream = require('stream')
 const {buildCryptor, evpBytesToKey} = require('../src/cryptor')
 
 describe('Test crypto', () => {
@@ -17,7 +18,35 @@ describe('Test crypto', () => {
     })
 
     it('Should works with stream', async () => {
-      // todo
+      const content = 'hello, world'
+      const buf = Buffer.from(content, 'utf8')
+
+      // encrypt
+      const encryptInStream = new stream.PassThrough()
+      encryptInStream.push(buf)
+      encryptInStream.push(null)
+      const encryptOutStream = new stream.PassThrough()
+      encryptInStream.pipe(cryptor.cipher).pipe(encryptOutStream)
+      const encryptedPromise = new Promise(resolve => {
+        let chunks = []
+        encryptOutStream.on('data', chunk => chunks.push(chunk))
+        encryptOutStream.on('end', () => resolve(Buffer.concat(chunks)))
+      })
+      const encrypted = await encryptedPromise
+
+      // decrypt
+      const decryptInStream = new stream.PassThrough()
+      decryptInStream.push(encrypted)
+      decryptInStream.push(null)
+      const decryptOutStream = new stream.PassThrough()
+      decryptInStream.pipe(cryptor.decipher).pipe(decryptOutStream)
+      const decryptedPromise = new Promise(resolve => {
+        let chunks = []
+        decryptOutStream.on('data', chunk => chunks.push(chunk))
+        decryptOutStream.on('end', () => resolve(Buffer.concat(chunks)))
+      })
+      const decrypted = await decryptedPromise
+      expect(decrypted.toString('utf8')).toBe(content)
     })
   })
   describe('Test evpBytesToKey', () => {
