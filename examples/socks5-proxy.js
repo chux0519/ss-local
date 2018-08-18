@@ -1,4 +1,4 @@
-const {createServer} = require('./src/socks5')
+const {createServer} = require('../src/socks5')
 
 const server = createServer()
 

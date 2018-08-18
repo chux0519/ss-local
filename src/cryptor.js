@@ -4,35 +4,32 @@ const KEY_LEN = 32
 const IV_LEN = 16
 
 const addIV = (iv, buf) => Buffer.concat([iv, buf])
+const genKeyByPass = pass => evpBytesToKey(pass)[0]
 
-function buildCryptor (password) {
-  const [key, _] = evpBytesToKey(password) // eslint-disable-line
-  const iv = crypto.randomBytes(IV_LEN)
-  const cipher = crypto.createCipheriv('aes-256-cfb', key, iv)
-  const decipher = crypto.createDecipheriv('aes-256-cfb', key, iv)
-
-  // for buffer
-  const encode = buf => encodeBuffer(key, iv, buf)
-  const decode = buf => decodeBuffer(key, iv, buf)
-
-  return {
-    key,
-    iv,
-    cipher, // for stream
-    decipher, // for stream
-    encode, // for buffer
-    decode // for buffer
+class Cryptor {
+  constructor (password, key = null, encryptIV = null, decryptIV = null) {
+    if (!password) throw new Error('Cryptor: password required')
+    this._password = password
+    this._key = key || genKeyByPass(password)
+    this._encryptIV = encryptIV || crypto.randomBytes(IV_LEN)
+    this._decryptIV = decryptIV
+    this._cipher = crypto.createCipheriv('aes-256-cfb', this._key, this._encryptIV)
+    this._decipher = null
   }
-}
-
-function encodeBuffer (key, iv, buf) {
-  const cipher = crypto.createCipheriv('aes-256-cfb', key, iv)
-  return Buffer.concat([cipher.update(buf), cipher.final()])
-}
-
-function decodeBuffer (key, iv, buf) {
-  const decipher = crypto.createDecipheriv('aes-256-cfb', key, iv)
-  return Buffer.concat([decipher.update(buf), decipher.final()])
+  encode (chunk) {
+    return this._cipher.update(chunk)
+  }
+  decode (chunk) {
+    if (!this._decipher) throw new Error('decode: decipher not found')
+    return this._decipher.update(chunk)
+  }
+  get encryptIV () { return this._encryptIV }
+  set decryptIV (iv) {
+    if (!iv) throw new Error('iv is requried')
+    if (this._decipher || this._decryptIV) throw new Error('decryptIV exists')
+    this._decryptIV = iv
+    this._decipher = crypto.createDecipheriv('aes-256-cfb', this._key, iv)
+  }
 }
 
 // EVP_BytesToKey https://www.openssl.org/docs/man1.1.0/crypto/EVP_BytesToKey.html
@@ -59,6 +56,6 @@ function evpBytesToKey (password) {
 
 module.exports = {
   addIV,
-  buildCryptor,
-  evpBytesToKey
+  evpBytesToKey,
+  Cryptor
 }

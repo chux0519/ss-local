@@ -71,7 +71,6 @@ function createServer (options = {}) {
       if (!dist) {
         return sock.end()
       }
-      console.log('Request', buffer[1], ' to: ' + dist.addr + ':' + dist.port)
       onProxy(buffer, dist, sock)
     }
   })
@@ -114,7 +113,7 @@ function defaultProxy (buffer, dist, sock) {
       sock.pipe(client)
     })
   })
-  client.on('error', console.error)
+  client.once('error', console.error)
 }
 
 module.exports = {
