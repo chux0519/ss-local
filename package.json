@@ -1,12 +1,13 @@
 {
   "name": "ss-local",
   "version": "1.0.0",
-  "description": "",
+  "description": "A minimal shadowsocks client implemented by nodejs.",
   "main": "index.js",
   "scripts": {
     "test": "jest"
   },
-  "author": "",
+  "author": "Yongsheng Xu",
+  "keywords": ["shadowsocks", "client", "local"],
   "license": "ISC",
   "dependencies": {},
   "devDependencies": {
