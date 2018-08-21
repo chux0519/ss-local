@@ -1,7 +1,7 @@
 {
   "name": "ss-local",
   "version": "1.0.0",
-  "description": "A minimal shadowsocks client implemented by nodejs.",
+  "description": "A minimal shadowsocks local server implemented by nodejs.",
   "main": "index.js",
   "scripts": {
     "test": "jest"

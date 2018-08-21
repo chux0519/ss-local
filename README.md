@@ -1,6 +1,6 @@
 # ss-local
 
-A minimal shadowsocks client implemented by nodejs.
+A minimal shadowsocks local server implemented by nodejs.
 
 Because of using [stream.pipeline](https://nodejs.org/dist/latest-v10.x/docs/api/stream.html#stream_stream_pipeline_streams_callback), node version must be greater than 10.
 
