@@ -1,3 +1,3 @@
-const serve = require('./src/index')
+const createServer = require('./src/index')
 
-module.exports = serve
+module.exports = createServer

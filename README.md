@@ -9,7 +9,7 @@ ps: This is an unstable poc project, might be rewrite after some time.
 ## feature
 
 - TCP support (only)
-- aes-256-cfb encrytion (only, which is the default method of most of ss server)
+- mutiple [cipher](#ciphers) supported
 - minimal code
 
 ## quickstart
@@ -21,17 +21,34 @@ ps: This is an unstable poc project, might be rewrite after some time.
 2. start local server
 
     ```javascript
-    const serve = require('ss-local')
+    const createServer = require('ss-local')
 
-    serve({
-      host: 'ss server host',
-      port: 'ss server port',
-      password: 'password',
-      localPort: 'ss local port' // 1088 by default
+    const server = createServer({
+      host: '127.0.0.1',
+      port: 8388,
+      password: 'chuxss',
+      method: 'aes-256-cfb'
     })
+
+    server.listen(1088, () => { console.log('serve at 1088') })
     ```
 
 3. test via curl
 
     curl 7.54.0 (x86_64-apple-darwin17.0) libcurl/7.54.0 LibreSSL/2.0.20 zlib/1.2.11 nghttp2/1.24.0
     > curl https://github.com/ --socks5 127.0.0.1:1088
+
+## ciphers
+
+Most ciphers recommended [here](https://shadowsocks.org/en/spec/Stream-Ciphers.html) are supported.
+
+- [x] aes-128-ctr
+- [x] aes-192-ctr
+- [x] aes-256-ctr
+- [x] aes-128-cfb
+- [x] aes-192-cfb
+- [x] aes-256-cfb
+- [x] camellia-128-cfb
+- [x] camellia-192-cfb
+- [x] camellia-256-cfb
+- [ ] chacha20-ietf
