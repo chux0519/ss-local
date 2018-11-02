@@ -1,5 +1,5 @@
+const {createServer: createSocksServer} = require('node-socks5')
 const {buildLocalProxy} = require('./ss-local')
-const {createServer: createSocksServer} = require('./socks5')
 
 function createServer (options) {
   const onProxy = buildLocalProxy(options)
