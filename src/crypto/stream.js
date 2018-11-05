@@ -1,21 +1,22 @@
 const crypto = require('crypto')
+const { evpBytesToKey } = require('./evp')
 
 const CIPHERS = {
-  'aes-128-ctr': {keyLen: 16, ivLen: 16},
-  'aes-192-ctr': {keyLen: 24, ivLen: 16},
-  'aes-256-ctr': {keyLen: 32, ivLen: 16},
-  'aes-128-cfb': {keyLen: 16, ivLen: 16},
-  'aes-192-cfb': {keyLen: 24, ivLen: 16},
-  'aes-256-cfb': {keyLen: 32, ivLen: 16},
-  'camellia-128-cfb': {keyLen: 16, ivLen: 16},
-  'camellia-192-cfb': {keyLen: 24, ivLen: 16},
-  'camellia-256-cfb': {keyLen: 32, ivLen: 16}
+  'aes-128-ctr': { keyLen: 16, ivLen: 16 },
+  'aes-192-ctr': { keyLen: 24, ivLen: 16 },
+  'aes-256-ctr': { keyLen: 32, ivLen: 16 },
+  'aes-128-cfb': { keyLen: 16, ivLen: 16 },
+  'aes-192-cfb': { keyLen: 24, ivLen: 16 },
+  'aes-256-cfb': { keyLen: 32, ivLen: 16 },
+  'camellia-128-cfb': { keyLen: 16, ivLen: 16 },
+  'camellia-192-cfb': { keyLen: 24, ivLen: 16 },
+  'camellia-256-cfb': { keyLen: 32, ivLen: 16 }
 }
 
-class Cryptor {
+class StreamCryptor {
   constructor (method, password, key = null, encryptIV = null, decryptIV = null) {
     if (!password) throw new Error('Cryptor: password required')
-    const {keyLen, ivLen} = CIPHERS[method] || {}
+    const { keyLen, ivLen } = CIPHERS[method] || {}
     if (!keyLen || !ivLen) throw new Error(`Cryptor: method ${method} is not supported`)
     this._password = password
     this._method = method
@@ -43,30 +44,7 @@ class Cryptor {
   }
 }
 
-// EVP_BytesToKey https://www.openssl.org/docs/man1.1.0/crypto/EVP_BytesToKey.html
-function evpBytesToKey (password, keyLen, ivLen) {
-  const pass = Buffer.from(password, 'utf8')
-
-  let md5 = crypto.createHash('md5')
-  let buf = []
-  let data = pass
-  let i = 0
-  while (buf.length < keyLen + ivLen) {
-    md5 = crypto.createHash('md5')
-    data = password
-    if (i > 0) data = Buffer.concat([buf[i - 1], pass])
-    md5.update(data)
-    buf.push(md5.digest())
-    i += 1
-  }
-  buf = Buffer.concat(buf)
-  const key = buf.slice(0, keyLen)
-  const iv = buf.slice(keyLen, keyLen + ivLen)
-  return [key, iv]
-}
-
 module.exports = {
-  evpBytesToKey,
-  Cryptor,
-  CIPHERS
+  StreamCryptor,
+  STREAM_CIPHERS: CIPHERS
 }

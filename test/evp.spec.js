@@ -1,4 +1,4 @@
-const {evpBytesToKey} = require('../src/cryptor')
+const { evpBytesToKey } = require('../src/crypto/evp')
 
 describe('Test crypto', () => {
   const pass = 'key'

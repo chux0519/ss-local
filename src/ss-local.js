@@ -1,11 +1,14 @@
 const net = require('net')
-const {pipeline, Transform} = require('stream')
-const {Cryptor, CIPHERS} = require('./cryptor')
+const { pipeline, Transform } = require('stream')
+const { StreamCryptor, AEADCryptor, CIPHERS } = require('./crypto')
 
 function buildLocalProxy (options) {
-  const {host, port, password, method} = options
+  const { host, port, password, method } = options
   function onProxy (buffer, dist, sock) {
-    const cryptor = new Cryptor(method, password)
+    const { isAEAD, ivLen } = CIPHERS[method]
+    const cryptor = isAEAD
+      ? new AEADCryptor(method, password)
+      : new StreamCryptor(method, password)
     const tunnel = net.createConnection(port, host, () => {
       const rep = Buffer.from(buffer)
       rep[1] = 0x00
@@ -39,7 +42,6 @@ function buildLocalProxy (options) {
               if (err) console.error(`error: sock to tunnel: ${err.toString()}`)
             })
             tunnel.once('data', chunk => {
-              const {ivLen} = CIPHERS[method]
               cryptor.decryptIV = chunk.slice(0, ivLen)
               const payload = cryptor.decode(chunk.slice(ivLen))
               sock.write(payload, () => {
@@ -64,4 +66,4 @@ function buildLocalProxy (options) {
   return onProxy
 }
 
-module.exports = {buildLocalProxy}
+module.exports = { buildLocalProxy }
