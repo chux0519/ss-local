@@ -51,4 +51,4 @@ Most ciphers recommended [here](https://shadowsocks.org/en/spec/Stream-Ciphers.h
 - [x] camellia-128-cfb
 - [x] camellia-192-cfb
 - [x] camellia-256-cfb
-- [ ] chacha20-ietf
+- [x] chacha20-ietf
